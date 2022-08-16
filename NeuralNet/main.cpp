@@ -33,7 +33,7 @@ private:
 
 };
 
-class NodeCollection{
+class NodeCollection{ //node collections are essentially layers
     vector<double> inputValues{};
 public:
     NodeCollection(const vector<double> &inputValues) : inputValues(inputValues) {};
@@ -48,22 +48,57 @@ public:
 
     vector<Node> allNodesInCollection{};
 
-    const vector<Node> &getAllNodesInCollection() const {
+    const vector<Node> getAllNodesInCollection() const {
+      //  setAllNodesInCollection();
         return allNodesInCollection;
     }
 
-    vector<Node> setAllNodesInCollection(const vector<Node> &allNodesInCollection) {
-        vector<Node> nodes;
-        Node node(80);
-
-        for(double singleInput : inputValues)
-            Node node(singleInput);
-            nodes.push_back(node);
-
-        return nodes;
+    void printAllNodesZLInCollection(){
+        for(Node node : allNodesInCollection){
+            cout << node.getZl();
+        }
     }
 
+    vector<Node> setAllNodesInCollection(){ // (const vector<Node> &allNodesInCollection) {
+       // vector<Node> nodes;
+       // Node node(80);
 
+        for(double singleInput : inputValues) {
+            Node node(singleInput);
+            allNodesInCollection.push_back(node);
+        }
+
+        return allNodesInCollection;
+    }
+};
+
+class Layer{
+    //all layers have a label (e.g. output), but this will just be the name. We need to know the layer however to perform gradient descent
+    // so... perhaps have an input of...
+    //input Node collection into Layers
+    //for now, we just have NodeCollection as a layer - as they are essentially the same thing
+
+};
+
+class NodesIntoLayers{
+    //here we put the nodes into layers? so input array values, and then make a layer
+};
+
+class Weight{
+    //Layer needs to be in the constructor
+    int indexInPreviousLayer;
+    int indexInNextLayer;
+    double intialValueRange;
+
+public:
+    Weight(int indexInPreviousLayer, int indexInNextLayer, double intialValueRange) : indexInPreviousLayer(
+            indexInPreviousLayer), indexInNextLayer(indexInNextLayer), intialValueRange(intialValueRange) {}
+
+
+private:
+    double setInitialValue(){
+        //generate random number
+    }
 };
 
 
@@ -77,10 +112,16 @@ int main() {
 
     NodeCollection nodeCollection(inputValues);
 
-    for (double i : nodeCollection.getInputValues())
-        cout << i << ", ";
+   // for (double i : nodeCollection.getInputValues())
+     //   cout << i << ", ";
 
     cout << nodeCollection.getNoOfNodes();
+
+    nodeCollection.setAllNodesInCollection();
+    // nodeCollection.getNoOfNodes();
+    nodeCollection.printAllNodesZLInCollection(); //YAY
+
+
 
     return 0;
 

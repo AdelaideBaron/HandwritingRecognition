@@ -18,4 +18,4 @@ _report to be linked at the beginning of August 2022, once undergraduate grades 
 Steps:
 - create classes, objects, etc.
 - begin with 4x4 mock images
-- convert to actual images 
+- convert to actual images
