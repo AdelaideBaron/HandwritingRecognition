@@ -20,3 +20,19 @@ _Testing the creation of NodeCollection, the constructor, and methods within. On
 
     cout << nodeCollection.getNoOfNodes();
 ```
+
+_Testing the creation of nodes & their ZL in the collection_ 
+```
+   vector<double> inputValues(arr, arr + n);
+
+    NodeCollection nodeCollection(inputValues);
+
+   // for (double i : nodeCollection.getInputValues())
+     //   cout << i << ", ";
+
+    cout << nodeCollection.getNoOfNodes();
+
+    nodeCollection.setAllNodesInCollection();
+    // nodeCollection.getNoOfNodes();
+    nodeCollection.printAllNodesZLInCollection(); //YAY 
+```
