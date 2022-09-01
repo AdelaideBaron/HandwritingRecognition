@@ -1,6 +1,8 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <stdlib.h>
+#include <map>
 
 using namespace std;
 
@@ -33,10 +35,12 @@ private:
 
 };
 
-class NodeCollection{ //node collections are essentially layers
+class Layer{ //Layer = node collection
     vector<double> inputValues{};
+    int layerNumber;
 public:
-    NodeCollection(const vector<double> &inputValues) : inputValues(inputValues) {};
+    Layer(const vector<double> &inputValues, int layerNumber) : inputValues(inputValues),
+                                                                layerNumber(layerNumber) {setAllNodesInCollection();}
 
     const vector<double> &getInputValues() const {
         return inputValues;
@@ -46,7 +50,7 @@ public:
         return inputValues.size();
     }
 
-    vector<Node> allNodesInCollection{};
+    vector<Node> allNodesInCollection{}; //can this be accessed, and changed, by calling class? Maybe make private?
 
     const vector<Node> getAllNodesInCollection() const {
       //  setAllNodesInCollection();
@@ -58,8 +62,9 @@ public:
             cout << node.getZl();
         }
     }
+private:
 
-    vector<Node> setAllNodesInCollection(){ // (const vector<Node> &allNodesInCollection) {
+    void setAllNodesInCollection(){ // (const vector<Node> &allNodesInCollection) { //run this to make the nodes
        // vector<Node> nodes;
        // Node node(80);
 
@@ -68,37 +73,149 @@ public:
             allNodesInCollection.push_back(node);
         }
 
-        return allNodesInCollection;
+       // return allNodesInCollection;
     }
 };
 
-class Layer{
-    //all layers have a label (e.g. output), but this will just be the name. We need to know the layer however to perform gradient descent
-    // so... perhaps have an input of...
-    //input Node collection into Layers
-    //for now, we just have NodeCollection as a layer - as they are essentially the same thing
 
-};
 
 class NodesIntoLayers{
     //here we put the nodes into layers? so input array values, and then make a layer
 };
 
-class Weight{
-    //Layer needs to be in the constructor
+class Weight : public error_code {
+    //Layer needs to be in the constructor - no, this will be monitored in weight collection
     int indexInPreviousLayer;
     int indexInNextLayer;
-    double intialValueRange;
+
+
 
 public:
-    Weight(int indexInPreviousLayer, int indexInNextLayer, double intialValueRange) : indexInPreviousLayer(
-            indexInPreviousLayer), indexInNextLayer(indexInNextLayer), intialValueRange(intialValueRange) {}
+    Weight(int indexInPreviousLayer, int indexInNextLayer) : indexInPreviousLayer(
+            indexInPreviousLayer), indexInNextLayer(indexInNextLayer){ }
+
+    int getIndexInPreviousLayer() const {
+        return indexInPreviousLayer;
+    }
+
+    int getIndexInNextLayer() const {
+        return indexInNextLayer;
+    }
+
+    double getWeightValue() const {
+        return weightValue;
+    }
+
+    void performGradientDescent(){
+
+    }
+
+//will have the gradient descent bits in here?
 
 
 private:
-    double setInitialValue(){
-        //generate random number
+    double weightValue = rand() % 11 + (-5);//decided on range [-5,5]
+};
+
+class WeightLayerCollection{
+    int destinationLayer;
+    int nodesInDestination;
+    int nodesInStart;
+
+    //constructor - with setAmountOfWeights called
+
+public:
+    WeightLayerCollection(int destinationLayer, int nodesInDestination, int nodesInStart) : destinationLayer(
+            destinationLayer), nodesInDestination(nodesInDestination), nodesInStart(nodesInStart) {
+      //  generateWeightNodeMap();
     }
+
+    void start(){
+        setInitialAllWeightsLayerStartToDestination();
+        createWeightLabels();
+    }
+
+    void updateWeights(){
+        //will have to call gradient decent on each weight
+    }
+
+    Weight accessParticularWeight(int index){ //to be used above
+        return allWeights[index];
+    }
+
+    void accessMap(){
+//        map<char, int>::iterator it;
+//        for(it=first.begin(); it!=first.end(); ++it){
+//            cout << it->first << " => " << it->second << '\n';
+//        }
+    }
+
+
+// private:
+    int amountOfWeights = nodesInDestination * nodesInStart;
+     vector<Weight> allWeights;
+     vector<double> allWeightValues; //more for monitoring purposes
+     vector<string> nodeWeightLabels;
+     map<string, Weight> mapWeightsCorrespondingNodes;
+
+    vector<Weight> setInitialAllWeightsLayerStartToDestination() { //sets the initial weights
+        for(int i = 0; i < amountOfWeights; i++){
+            Weight weight(destinationLayer -1, destinationLayer);
+            allWeights.push_back(weight);
+
+            double value = weight.getWeightValue(); //monitoring only
+            allWeightValues.push_back(value); //monitoring only
+
+        }
+
+        return allWeights;
+    }
+
+    void printWeight(){ //kind of pointless, as what are you printing?
+        for (Weight item : allWeights)
+            cout << item << "  ";
+    }
+
+    void printValues(){
+        for (double item : allWeightValues)
+            cout << item << " ";
+    }
+
+    vector<string> createWeightLabels() { //setting the nodes assigned, e.g. 1, 2 = n_1 in layer L-1, n_2 in layer L
+        for(int i = 0; i < nodesInStart; i ++){
+            for(int j = 0; j < nodesInDestination; j ++){
+                string stringToAdd = to_string(i) + ":" + to_string(j);
+                nodeWeightLabels.push_back(stringToAdd);
+            }
+        }
+        return nodeWeightLabels;
+    }
+
+    void printNodes(){
+        for (string item : nodeWeightLabels)
+            cout << item << "  ";
+    }
+
+    map<string, Weight> setWeightsToNodes(){
+        //eventually, have something in place to ensure the things have been created
+        int i = 0;
+        for(string nodePair : nodeWeightLabels){
+            mapWeightsCorrespondingNodes.insert({nodePair, allWeights[i]});
+            i++;
+        }
+
+        return mapWeightsCorrespondingNodes;
+    }
+
+    void printNodeWeightPairs(){
+        cout << "KEY\tELEMENT\n";
+        for (auto itr = mapWeightsCorrespondingNodes.begin(); itr != mapWeightsCorrespondingNodes.end(); ++itr) {
+            cout << itr->first
+                 << '\t' << itr->second << '\n';
+        }
+    }
+
+
 };
 
 
@@ -106,22 +223,11 @@ int main() {
     double arr[] = {10.0, 20.0, 30.0};
     int n = sizeof(arr) / sizeof(arr[0]);
 
-
-
     vector<double> inputValues(arr, arr + n);
 
-    NodeCollection nodeCollection(inputValues);
+    Layer nodeCollection(inputValues, 0);
 
-   // for (double i : nodeCollection.getInputValues())
-     //   cout << i << ", ";
-
-    cout << nodeCollection.getNoOfNodes();
-
-    nodeCollection.setAllNodesInCollection();
-    // nodeCollection.getNoOfNodes();
-    nodeCollection.printAllNodesZLInCollection(); //YAY
-
-
+    WeightLayerCollection outputLayer(0, 2, 3);
 
     return 0;
 
