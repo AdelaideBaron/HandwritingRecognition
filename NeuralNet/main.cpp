@@ -106,9 +106,7 @@ public:
         return weightValue;
     }
 
-    void performGradientDescent(){
 
-    }
 
 //will have the gradient descent bits in here?
 
@@ -133,6 +131,7 @@ public:
     void start(){
         setInitialAllWeightsLayerStartToDestination();
         createWeightLabels();
+        setWeightsToNodes();
     }
 
     void updateWeights(){
@@ -142,14 +141,6 @@ public:
     Weight accessParticularWeight(int index){ //to be used above
         return allWeights[index];
     }
-
-    void accessMap(){
-//        map<char, int>::iterator it;
-//        for(it=first.begin(); it!=first.end(); ++it){
-//            cout << it->first << " => " << it->second << '\n';
-//        }
-    }
-
 
 // private:
     int amountOfWeights = nodesInDestination * nodesInStart;
@@ -215,6 +206,24 @@ public:
         }
     }
 
+    void performGradientDescent(){
+        //iterate through the map
+        for (auto itr = mapWeightsCorrespondingNodes.begin(); itr != mapWeightsCorrespondingNodes.end(); ++itr) {
+           string nodePair = itr->first;
+            Weight weight = itr->second;
+//            cout << nodePair
+//                 << '\t' << itr->second << '\n';
+        }
+
+
+       // switch(indexInNextLayer){
+       //     case 0:
+
+
+      //  }
+
+    }
+
 
 };
 
@@ -229,7 +238,12 @@ int main() {
 
     WeightLayerCollection outputLayer(0, 2, 3);
 
+    outputLayer.start();
+//    outputLayer.printNodeWeightPairs();
+    outputLayer.performGradientDescent();
+
     return 0;
-
-
 }
+
+//TO DO
+// communicate with the layer to get the relevant index
