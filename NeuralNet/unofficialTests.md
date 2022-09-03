@@ -82,3 +82,8 @@ _Ensuring the weights are different by assessing their value_
     outputLayer.printValues(); 
 
 ```
+
+_Testing string splitter_ 
+``` 
+cout << outputLayer.splitStringAtCharacter("hello:you", ":", 1);
+```

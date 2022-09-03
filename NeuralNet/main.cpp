@@ -2,9 +2,12 @@
 #include <math.h>
 #include <vector>
 #include <stdlib.h>
+#include <string>
 #include <map>
 
 using namespace std;
+
+
 
 class Node{
     double zL;
@@ -50,6 +53,8 @@ public:
         return inputValues.size();
     }
 
+
+
     vector<Node> allNodesInCollection{}; //can this be accessed, and changed, by calling class? Maybe make private?
 
     const vector<Node> getAllNodesInCollection() const {
@@ -62,12 +67,13 @@ public:
             cout << node.getZl();
         }
     }
+
+    Node getParticularNode(int indexNode){
+        return allNodesInCollection.at(indexNode + 1);
+    }
 private:
 
-    void setAllNodesInCollection(){ // (const vector<Node> &allNodesInCollection) { //run this to make the nodes
-       // vector<Node> nodes;
-       // Node node(80);
-
+    void setAllNodesInCollection(){
         for(double singleInput : inputValues) {
             Node node(singleInput);
             allNodesInCollection.push_back(node);
@@ -116,17 +122,20 @@ private:
 };
 
 class WeightLayerCollection{
-    int destinationLayer;
+    int destinationLayerIndex;
     int nodesInDestination;
     int nodesInStart;
 
     //constructor - with setAmountOfWeights called
 
 public:
-    WeightLayerCollection(int destinationLayer, int nodesInDestination, int nodesInStart) : destinationLayer(
-            destinationLayer), nodesInDestination(nodesInDestination), nodesInStart(nodesInStart) {
-      //  generateWeightNodeMap();
-    }
+
+    WeightLayerCollection(int destinationLayerIndex, int nodesInDestination, int nodesInStart) : destinationLayerIndex(
+            destinationLayerIndex), nodesInDestination(nodesInDestination), nodesInStart(nodesInStart) {}
+//    WeightLayerCollection(int destinationLayer, int nodesInDestination, int nodesInStart) : destinationLayerIndex(
+//            destinationLayer), nodesInDestination(nodesInDestination), nodesInStart(nodesInStart) {
+//      //  generateWeightNodeMap();
+//    }
 
     void start(){
         setInitialAllWeightsLayerStartToDestination();
@@ -149,16 +158,30 @@ public:
      vector<string> nodeWeightLabels;
      map<string, Weight> mapWeightsCorrespondingNodes;
 
+    static string splitStringAtCharacter(string s, string del, int indexToReturn) // https://www.geeksforgeeks.org/how-to-split-a-string-in-cc-python-and-java/
+    {
+        int start, end = -1*del.size();
+        do {
+            start = end + del.size();
+            end = s.find(del, start);
+            string firstString = s.substr(start, end - start);
+            string endString = s.substr(end - start + 1, end);
+            string strings[] = {firstString, endString};
+            if (indexToReturn == 0) {
+                return firstString;
+            } else if (indexToReturn == 1) {
+                return endString;}
+        } while (end != -1);
+    }
+
     vector<Weight> setInitialAllWeightsLayerStartToDestination() { //sets the initial weights
         for(int i = 0; i < amountOfWeights; i++){
-            Weight weight(destinationLayer -1, destinationLayer);
+            Weight weight(destinationLayerIndex - 1, destinationLayerIndex);
             allWeights.push_back(weight);
 
             double value = weight.getWeightValue(); //monitoring only
             allWeightValues.push_back(value); //monitoring only
-
         }
-
         return allWeights;
     }
 
@@ -206,13 +229,31 @@ public:
         }
     }
 
-    void performGradientDescent(){
+    void getStartLayerNode(string nodePair){
+
+       // int myint1 = stoi(str1)
+    }
+
+    void performGradientDescent(Layer inputLayer, Layer outputLayer, double expectedOutput[]){ //unfinished
         //iterate through the map
         for (auto itr = mapWeightsCorrespondingNodes.begin(); itr != mapWeightsCorrespondingNodes.end(); ++itr) {
-           string nodePair = itr->first;
+          //  string nodePair = itr->first;
+            string nodeIndexStart = splitStringAtCharacter(itr->first, ":", 0);
+            string nodeIndexFinish = splitStringAtCharacter(itr->first, ":", 1);
+            Node startNode = inputLayer.getParticularNode(stoi(nodeIndexStart));
+            Node finishNode = inputLayer.getParticularNode(stoi(nodeIndexFinish));
             Weight weight = itr->second;
-//            cout << nodePair
-//                 << '\t' << itr->second << '\n';
+            double derivative;
+            if(destinationLayerIndex == 0){
+                double aLMin1 = startNode.getActivation();
+                double aL = finishNode.getActivation();
+                double y = expectedOutput[stoi(nodeIndexFinish) + 1];
+                double zL = finishNode.getZl();
+                double sigmoidDeriv = finishNode.sigmoidFunction(zL) * ( 1 - finishNode.sigmoidFunction(zL));
+                derivative = 2 * aLMin1 * (aL - y) * sigmoidDeriv;
+            }
+
+
         }
 
 
@@ -228,6 +269,8 @@ public:
 };
 
 
+
+
 int main() {
     double arr[] = {10.0, 20.0, 30.0};
     int n = sizeof(arr) / sizeof(arr[0]);
@@ -240,7 +283,10 @@ int main() {
 
     outputLayer.start();
 //    outputLayer.printNodeWeightPairs();
-    outputLayer.performGradientDescent();
+    // outputLayer.performGradientDescent();//
+
+
+
 
     return 0;
 }
